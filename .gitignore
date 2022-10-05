@@ -1,0 +1,8 @@
+/notebooks
+
+.venv
+__pycache__
+*.egg-info
+example_key.txt
+build
+dist
