@@ -1160,3 +1160,4 @@ class Series(Releases):
         url = self._add_optional_params(url_prefix, optional_args)
         self.series_stack["get_series_vintagedates"] = self._fetch_data(url)
         return self.series_stack["get_series_vintagedates"]
+
