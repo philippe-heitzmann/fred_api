@@ -193,7 +193,7 @@ class Series(Releases):
         observation_end: str, default None
             The end of the observation period formatted as "YYYY-MM-DD".
             If None, fred.observation_end is used.
-            If fred.observation_end = None, FRED web service will use '9999-12-31' (earliest available).
+            If fred.observation_end = None, FRED web service will use '9999-12-31' (latest available).
         units: str, default None
             A string that indicates a data value transformation.
             Can be one of :
