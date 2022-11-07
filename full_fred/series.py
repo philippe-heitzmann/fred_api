@@ -193,7 +193,7 @@ class Series(Releases):
         observation_end: str, default None
             The end of the observation period formatted as "YYYY-MM-DD".
             If None, fred.observation_end is used.
-            If fred.observation_end = None, FRED web service will use '9999-12-31' (earliest available).
+            If fred.observation_end = None, FRED web service will use '9999-12-31' (latest available).
         units: str, default None
             A string that indicates a data value transformation.
             Can be one of :
@@ -1160,3 +1160,24 @@ class Series(Releases):
         url = self._add_optional_params(url_prefix, optional_args)
         self.series_stack["get_series_vintagedates"] = self._fetch_data(url)
         return self.series_stack["get_series_vintagedates"]
+
+    def get_series_frequencies(self, series_ids: List[str],
+        realtime_start: str = None,
+        realtime_end: str = None):
+        '''Get frequency start and end date for series ID'''
+        frequencies, series_errors = {}, [] 
+        for idx, series_id in enumerate(series_ids):
+            try:
+                metadata = self.get_a_series(series_id = series_id)
+                frequency = metadata['seriess'][0]['frequency_short'] 
+                observation_start = metadata['seriess'][0]['observation_start']
+                observation_end = metadata['seriess'][0]['observation_end']
+                title = metadata['seriess'][0]['title']
+                frequencies[series_id] = {'frequency':frequency,
+                                          'observation_start':observation_start,
+                                          'observation_end':observation_end,
+                                          'title':title}
+            except:
+                series_errors.append(series_id)
+        print(f'{len(series_errors)} series data pull errors')
+        return frequencies, series_errors
