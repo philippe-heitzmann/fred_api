@@ -1,3 +1,5 @@
+from typing import List
+
 from .releases import Releases
 import pandas as pd
 from datetime import datetime
