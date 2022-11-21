@@ -40,12 +40,12 @@ class NumericalTransforms():
         return series.pct_change().fillna(0)
     
     def is_min(self, series, date_val):
-        earliest_day = series.min()
-        return earliest_day == date_val
+        min_val = series.min()
+        return min_val == date_val
 
     def is_max(self, series, date_val):
-        earliest_day = series.max()
-        return earliest_day == date_val
+        max_val = series.max()
+        return max_val == date_val
     
 
 class GeneralPreprocessing():

@@ -4,18 +4,26 @@ from typing import Type, List
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-import seaborn as sns
 
-sns.set_style( 'white')
-
-COLORS = ['blue', 'orange', 'green', 'gray', 'purple', 'brown', 'red']
+COLORS = ['blue', 'orange', 'green', 'gray', 'purple', 'brown', 'red']*7
 
 class Viz():
     '''Methods for creating a variety of visualizations such as barplots, lineplots, pairplots, heatmaps etc'''
     
     def __init__(self, figsize = (10,6)):
         self.figsize = figsize
+        self.t=1
         print(f'Instantiated with figsize {figsize}')
+    
+    
+    def _check_colors(self, **kwargs):
+        vline_xs, hline_ys = 0,0
+        if 'vline_xs' in kwargs:
+            vline_xs = len(kwargs['vline_xs'])
+        if 'hline_ys' in kwargs:
+            hline_ys = len(kwargs['hline_ys'])
+        colors = COLORS[:max(vline_xs, hline_ys)]
+        return colors
     
     
     def _set_decorations(self, ax, **kwargs):
@@ -35,14 +43,17 @@ class Viz():
         if 'rotation' in kwargs: plt.xticks(rotation = kwargs['rotation'])
         if 'vline_xs' in kwargs:
             trans = ax.get_xaxis_transform()
-            for vline_x, vline_y, label, color in zip(kwargs['vline_xs'], kwargs['vline_ys'], kwargs['labels'], kwargs['colors']):
+            vline_ys = [0.97 - idx * 0.05 for idx in range(len(kwargs['vline_xs']))]
+            colors = self._check_colors(**kwargs)
+            for vline_x, vline_y, label, color in zip(kwargs['vline_xs'], vline_ys, kwargs['labels'], colors):
                 plt.axvline(vline_x, linestyle = '--', color = color, linewidth = 1)
                 plt.text(vline_x, vline_y, label, transform = trans, fontsize = 10, color = 'black')
         if 'hline_ys' in kwargs:
             trans = ax.get_yaxis_transform()
-            for hline, label, color in zip (kwargs['hlines'], kwargs['labels'], kwargs['colors']):
+            colors = self._check_colors(**kwargs)
+            for hline, label, color in zip (kwargs['hline_ys'], kwargs['labels'], colors):
                 plt.axhline(y = hline, linestyle = '--', color = color, linewidth = 0.5)
-                plt.text(0.05, hline + 0.025, label, transform = trans, fontsize = 10, color = 'black')
+                plt.text(0.05, hline + 0.05, label, transform = trans, fontsize = 10, color = 'black')
         if 'annotations' in kwargs and kwargs['annotations']:
             annotation_adj = kwargs['annotation_adj'] if 'annotation_adj' in kwargs else 1
             rects = ax.patches
@@ -66,13 +77,13 @@ class Viz():
             plt.savefig(filename, bbox_inches = 'tight')
             print(f'Saved fig under filename {filename}')
 
+            
     def _init(self, **kwargs):
         fig, ax = plt.subplots(figsize = self.figsize)
         return fig, ax                
 
 
     def _end(self, ax, **kwargs):
-        print(kwargs)
         ax = self._set_decorations(ax, **kwargs)
         fig = ax.get_figure()
         fig.tight_layout()
@@ -138,15 +149,11 @@ class Viz():
 def get_hist(*series, label: str, figsize = (12,7), **kwargs):
     '''label = 'median: {} day of the month' '''
     vline_xs = [s.median() for s in series]
-    vline_ys = [0.97 - idx * 0.05 for idx in range(len(series))]
     labels = [label.format(int(round(vline_x,0))) for vline_x in vline_xs]
-    colors= COLORS[:len(vline_xs)]
     viz1 = Viz(figsize=figsize)
     fig, ax = viz1.make_hist(*series, 
                              vline_xs = vline_xs,
-                             vline_ys = vline_ys,
                              labels = labels,
-                             colors = colors,
                              **kwargs)
     return fig, ax
 
